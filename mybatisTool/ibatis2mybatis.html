@@ -3,7 +3,7 @@
 <head>
     <title>ibatis转mybatis</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge"> 
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 	<style type="text/css">
 		.btn-inp{ height:28px; line-height:28px; padding:0 10px; background:#f5fcfe; border-radius:3px; border:1px solid #15bdf4; color:#15bdf4; display:inline-block}
 		.btn-inp:hover{ background:#e9f9fd}
@@ -25,9 +25,10 @@
 
 <script>
 	String.prototype.trim=function(){
+      alert(123);
 	　　return this.replace(/(^\s*)|(\s*$)/g, "");
 	}
-	
+
     function transform(){
 		var before = document.getElementById("before").value;
 		var dealStr = before;
@@ -36,14 +37,14 @@
 		dealStr = dealStr.replace("resultClass", "resultType")
 		document.getElementById("after").value = dealStr;
 	}
-	
+
 	function dealString(dealStr){
 		var result = dealStr;
 		result = dealVariable(result);
 		result = dealLabel(result);
 		return result;
 	}
-	
+
 	function dealVariable(dealStr){
 		var resultBuf = "";
 		for(var i = 0 ;i < dealStr.length;i++){
@@ -62,7 +63,7 @@
 		}
 		return resultBuf;
 	}
-	
+
 	function dealLabel(dealStr){
 		var resultBuf = "";
 		for(var i = 0 ;i < dealStr.length;i++){
@@ -88,14 +89,14 @@
 				var param = result[1];
 				resultBuf += '<if test="' + param + ' ==null or ' + param + ' !=\'\'">'  + content + "</if>";
 				i = i + subStr.length + "<isEmpty</isEmpty>".length - 1;
-			}else if(isExistedByHeadAndTail(str,"<isNull","</isNull>")){	
+			}else if(isExistedByHeadAndTail(str,"<isNull","</isNull>")){
 				var subStr = getStringByHeadAndTail(str,"<isNull","</isNull>");
 				var result = findStr(subStr);
 				var content = result[0];
 				var param = result[1];
 				resultBuf += '<if test="' + param + ' ==null ">' + content + "</if>";
 				i = i + subStr.length + "<isNull</isNull>".length - 1;
-			}else if(isExistedByHeadAndTail(str,"<isEqual","</isEqual>")){	
+			}else if(isExistedByHeadAndTail(str,"<isEqual","</isEqual>")){
 				var subStr = getStringByHeadAndTail(str,"<isEqual","</isEqual>");
 				var result = findStr(subStr);
 				var content = result[0];
@@ -103,7 +104,7 @@
 				var compareValue = result[2];
 				resultBuf += '<if test="' + param + ' ==\'' + compareValue + '\' ">' + content + "</if>";
 				i = i + subStr.length + "<isEqual</isEqual>".length - 1;
-			}else if(isExistedByHeadAndTail(str,"<isNotEqual","</isNotEqual>")){	
+			}else if(isExistedByHeadAndTail(str,"<isNotEqual","</isNotEqual>")){
 				var subStr = getStringByHeadAndTail(str,"<isNotEqual","</isNotEqual>");
 				var result = findStr(subStr);
 				var content = result[0];
@@ -117,7 +118,7 @@
 		}
 		return resultBuf;
 	}
-	
+
 	function findStr(str){
 		var v = str.indexOf(">");
 		var condition = str.substring(0, v);
@@ -143,7 +144,7 @@
 		var result = [];
 		result[0] = content;
 		result[1] = param;
-		
+
 		start = temp.indexOf('comparevalue=');
 		if(start >= 0){
 			var compareValue = condition.substring(start + 'compareValue='.length + 1);
@@ -154,7 +155,7 @@
 		}
 		return result;
 	}
-	
+
 	function isExistedByHeadAndTail(dealStr ,haedChar ,tailChar){
 		var c = dealStr.indexOf(haedChar);
 		if(c == 0){
@@ -165,13 +166,13 @@
 		}
 		return false;
 	}
-	
+
 	function getStringByHeadAndTail(dealStr, haedChar, tailChar){
 		var returnStr = "";
 		var t = dealStr.substring(haedChar.length).indexOf(tailChar);
-		returnStr = dealStr.substring(haedChar.length, t + haedChar.length);	
+		returnStr = dealStr.substring(haedChar.length, t + haedChar.length);
 		return returnStr;
 	}
-	
+
 </script>
 </html>
