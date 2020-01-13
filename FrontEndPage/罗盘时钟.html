@@ -6,7 +6,8 @@
 <style type="text/css">
 .label {
     display: inline-block;
-    color: #276FBF;
+    /* color: #276FBF; */
+    color: #F6F4F3;
     text-align: center;
     padding: 0 15px;
     font-size: 12px;
@@ -15,13 +16,16 @@
 }
 </style>
 </head>
-<body bgcolor="#183059">
+<!-- <body bgcolor="#183059"> -->
+<body bgcolor="#323232">
 <div id="clock">
 
 </div>
 </body>
 
 <script type="text/javascript">
+  var color = '#F6F4F3';
+  var color2 = "#F0A202";
   var monthText = getArry(12,"月");
   var dayText = getArry(31,"号");
   //var weekText = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
@@ -104,7 +108,7 @@
           temp.style.left = x + 'px';
           temp.style.top = y + 'px';
           temp.style.display="block";
-          temp.style.color = '#F0A202';
+          temp.style.color = color2;
       }
 
       for (var i = 0; i < textSet.length; i++) {
@@ -197,14 +201,14 @@
       }
       for (var i = 0; i < nowValue.length; i++) {
           var num = nowValue[i];
-          textSet[i][1][num].style.color = '#F0A202';
+          textSet[i][1][num].style.color = color2;
       }
   }
 
   function initStyle() {
       var label = document.getElementsByClassName('label');
       for (var i = 0; i < label.length; i++) {
-          label[i].style.color = '#276FBF';
+          label[i].style.color = color;
       }
   }
 </script>
