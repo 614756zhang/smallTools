@@ -12,7 +12,6 @@
 			height:100%
 		}
 		body{
-		  font-family: "华文细黑";
 		  background:url("../assets/image/S00327-08180232.jpg") no-repeat;
 		  background-size: 100%;
 		}
@@ -22,14 +21,34 @@
 			 margin-left: 38%;
 
 		}
+		.name{
+			 height: 30px;
+			 background-color: white;
+			 font-family: 'SimHei';
+			 font-size: 25px;
+			 margin-top: 8%;
+			 margin-left: 38%;
+			 margin-right: 10%;
+			 display:none;
+		}
+		.button{
+			position: absolute;
+			top: 10%;
+			right: 5%;
+			border:none;
+			background-color: white;
+		}
+		/*  666666*/
 	</style>
 </head>
 	<div class="time">
 		<strong id='timevalue'>03-27 08:54:12</strong>
 	</div>
-	<div class="name">
-
+	<div id="name" class="name">
+	  天源迪科科技园
 	</div>
+	<input class="button" type="button" value="...." onclick="changName()"/>
+
 <body>
 
 </body>
@@ -48,5 +67,11 @@
   second = second < 10 ? ('0' + second) : second;
   //return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
   document.getElementById('timevalue').innerHTML = m + '-' + d+' '+h+':'+minute+':'+second;
+
+	function changName(){
+		var name = prompt("请名称","");
+		document.getElementById('name').innerHTML = name;
+		document.getElementById('name').style.display="block";
+	}
 </script>
 </html>
