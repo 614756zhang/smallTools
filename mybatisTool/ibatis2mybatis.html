@@ -32,8 +32,16 @@
 		var before = document.getElementById("before").value;
 		var dealStr = before;
 		dealStr = dealString(dealStr);
-		dealStr = dealStr.replace("parameterClass", "parameterType");
-		dealStr = dealStr.replace("resultClass", "resultType")
+		
+		dealStr = dealStr.replace("ibatis.apache.org", "mybatis.org");
+		dealStr = dealStr.replace("DTD SQL Map 2.0", "DTD Mapper 3.0");
+		dealStr = dealStr.replace("ibatis.apache.org/dtd/sql-map-2.dtd", "mybatis.org/dtd/mybatis-3-mapper.dtd")
+		
+		dealStr = dealStr.replace(/parameterClass/g, "parameterType");
+		dealStr = dealStr.replace(/resultClass/g, "resultType");
+		dealStr = dealStr.replace(/sqlMap/g, "mapper");
+		dealStr = dealStr.replace(/class/g, "type");
+
 		document.getElementById("after").value = dealStr;
 	}
 

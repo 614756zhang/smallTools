@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>字符串转sql</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"> 
+	<style type="text/css">
+		.btn-inp{ height:28px; line-height:28px; padding:0 10px; background:#f5fcfe; border-radius:3px; border:1px solid #15bdf4; color:#15bdf4; display:inline-block}
+		.btn-inp:hover{ background:#e9f9fd}
+		.gy-textarea{ border-radius:3px; background:#fff; border:1px solid #e2e2e2; line-height:22px;  color:#555; font-family:"微软雅黑"}
+		.marg-top{margin-top:10px;}
+		.font{color:#15bdf4;}
+	</style>
+</head>
+
+<body>
+<span class="font marg-top">请输入你要转换的字符串：</span><br/>
+<textarea id="before" cols="100" class="gy-textarea marg-top"></textarea><br/>
+<span class="font marg-top">转化为：</span><br/>
+<textarea id="after" rows="10" cols="100" class="gy-textarea marg-top"></textarea><br/>
+<div class="marg-top">
+	<a class="btn-inp" onClick="transformSql();">select转化</a>
+	<a class="btn-inp" onClick="transformSqlInsert();">insert转化</a>
+</div>
+<div class="marg-top">
+	<textarea rows="5" cols="100" class="gy-textarea">
+mysql列拼接查询sql：
+	SELECT GROUP_CONCAT(COLUMN_NAME SEPARATOR ",") FROM information_schema.COLUMNS
+		WHERE TABLE_SCHEMA = 'mkt_center' AND TABLE_NAME = 'mkt_res_card_inst'
+	</textarea>
+	<!--Oracle列拼接查询sql：<br/>
+	<span></span><br/>-->
+</div>
+</body>
+
+<script>
+	String.prototype.trim=function(){
+	　　return this.replace(/(^\s*)|(\s*$)/g, "");
+	}
+	
+    function transformSql(){
+		var before = document.getElementById("before").value;
+	    var strArray = before.split(",");
+		var resultBf = "select \n";
+		for(i = 0 ; i < strArray.length ; i++){
+			var temp = strArray[i];
+			var tempArr = temp.toLowerCase().split("_");
+			var dealParam = "";
+			for(j = 0 ; j < tempArr.length ; j++){
+				if(j == 0 ){
+					dealParam += tempArr[j].trim();
+				}else{
+					dealParam += tempArr[j].trim().substring(0, 1).toUpperCase()+tempArr[j].trim().substring(1).toLowerCase();
+				}
+			}
+			dealParam = "\""+dealParam+"\"";
+			if(temp.toLowerCase().indexOf("_date") >= 0){
+				temp = "DATE_FORMAT(" + temp + ", '%Y%m%d%H%i%s')";
+			}
+			resultBf += "\t" + temp + "\t" + dealParam;
+			if(i != strArray.length - 1){
+				resultBf += ",\n";
+			}
+		}
+		resultBf += "\n from \n \n where \n\t" + strArray[0] + "=#{id}";
+		document.getElementById("after").value = resultBf;
+	}
+	
+	function transformSqlInsert(){
+		var before = document.getElementById("before").value;
+	    var strArray = before.split(",");
+		var resultBf = "insert into \n\t(";
+		var str = "";
+		var col = "";
+		for(i = 0 ; i < strArray.length ; i++){
+			var temp = strArray[i];
+			var tempArr = temp.toLowerCase().split("_");
+			var dealParam = "";
+			for(j = 0 ; j < tempArr.length ; j++){
+				if(j == 0 ){
+					dealParam += tempArr[j].trim();
+				}else{
+					dealParam += tempArr[j].trim().substring(0, 1).toUpperCase()+tempArr[j].trim().substring(1).toLowerCase();
+				}
+			}
+			dealParam = "#{"+dealParam+"}";
+			if(dealParam.indexOf("Date") >= 0){
+				dealParam = "now()";
+			}
+			if(i != 0){
+				str += "\t";
+				col += "\t"
+			}
+			str += temp;
+			col += dealParam;
+			if(i != strArray.length - 1){
+				col += ",\n";
+				str += ",\n";
+			}
+		}
+		resultBf += str+")\n values \n\t("+col+")";
+		document.getElementById("after").value = resultBf;
+	}
+</script>
+</html>

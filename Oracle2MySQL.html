@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>ibatis转mybatis</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<style type="text/css">
+		.btn-inp{ height:28px; line-height:28px; padding:0 10px; background:#f5fcfe; border-radius:3px; border:1px solid #15bdf4; color:#15bdf4; display:inline-block}
+		.btn-inp:hover{ background:#e9f9fd}
+		.gy-textarea{ border-radius:3px; background:#fff; border:1px solid #e2e2e2; line-height:22px;  color:#555; font-family:"微软雅黑"}
+		.marg-top{margin-top:10px;}
+		.font{color:#15bdf4;}
+	</style>
+</head>
+
+<body>
+<span class="font marg-top">oracle：</span><br/>
+<textarea id="before" rows="10" cols="150" class="gy-textarea marg-top"></textarea><br/>
+<span class="font marg-top">mysql：</span><br/>
+<textarea id="after" rows="10" cols="150" class="gy-textarea marg-top"></textarea><br/>
+<div class="marg-top">
+	<a class="btn-inp" onClick="transform();">转化</a>
+</div>
+</body>
+
+<script>
+	String.prototype.trim=function(){
+	　　return this.replace(/(^\s*)|(\s*$)/g, "");
+	}
+
+    function transform(){
+		var before = document.getElementById("before").value;
+		var dealStr = before;
+    dealStr = dealStr.replace(/decode/gi, "decode");
+		dealStr = dealString(dealStr);
+
+		dealStr = dealStr.replace(/YYYY/gi, "%Y");
+		dealStr = dealStr.replace(/MM/gi, "%m");
+		dealStr = dealStr.replace(/DD/gi, "%d");
+		dealStr = dealStr.replace(/HH24/gi, "%H");
+		dealStr = dealStr.replace(/MI/gi, "%i");
+		dealStr = dealStr.replace(/SS/gi, "%s");
+
+		dealStr = dealStr.replace(/from dual/gi, "");
+		dealStr = dealStr.replace(/nvl/gi, "ifnull");
+		dealStr = dealStr.replace(/sysdate/gi, "now()");
+		dealStr = dealStr.replace(/to_char/gi, "date_format");
+		dealStr = dealStr.replace(/to_date/gi, "str_to_date");
+		dealStr = dealStr.replace(/and\s+rownum\s*=\s*1/gi, "limit 1");
+
+		document.getElementById("after").value = dealStr;
+	}
+
+	function dealString(dealStr){
+		var result = dealStr;
+		result = dealLabel(result);
+		return result;
+	}
+
+	function dealLabel(dealStr){
+		var resultBuf = "";
+		for(var i = 0 ;i < dealStr.length;i++){
+			var str = dealStr.substring(i);
+			if (isExistedByHeadAndTail(str,"decode(",")")) {
+				var subStr = getStringByHeadAndTail(str,"decode(",")");
+				var arr = subStr.split(",");
+				resultBuf += "(case " + arr[0];
+				for (j=1; j<arr.length; j++) {
+					if (j%2 == 1) {
+						if (j == arr.length -1) {
+              resultBuf += " else ";
+						} else {
+							resultBuf += " when ";
+						}
+					} else {
+						resultBuf += " then ";
+					}
+					resultBuf += arr[j];
+				}
+				resultBuf += " end)"
+				i = i + subStr.length + "decode()".length - 1;
+			}else{
+				resultBuf += dealStr.charAt(i)
+			}
+		}
+		return resultBuf;
+	}
+
+
+	function isExistedByHeadAndTail(dealStr ,haedChar ,tailChar){
+		var c = dealStr.indexOf(haedChar);
+		if(c == 0){
+			var t = dealStr.substring(haedChar.length).indexOf(tailChar);
+			if(t > 0){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function getStringByHeadAndTail(dealStr, haedChar, tailChar){
+		var returnStr = "";
+		var t = dealStr.substring(haedChar.length).indexOf(tailChar);
+		returnStr = dealStr.substring(haedChar.length, t + haedChar.length);
+		return returnStr;
+	}
+
+</script>
+</html>
