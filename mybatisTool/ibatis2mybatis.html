@@ -1,185 +1,241 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
-    <title>ibatis转mybatis</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-	<style type="text/css">
-		.btn-inp{ height:28px; line-height:28px; padding:0 10px; background:#f5fcfe; border-radius:3px; border:1px solid #15bdf4; color:#15bdf4; display:inline-block}
-		.btn-inp:hover{ background:#e9f9fd}
-		.gy-textarea{ border-radius:3px; background:#fff; border:1px solid #e2e2e2; line-height:22px;  color:#555; font-family:"微软雅黑"}
-		.marg-top{margin-top:10px;}
-		.font{color:#15bdf4;}
-	</style>
+  <title>ibatis转mybatis</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <style type="text/css">
+    .btn-inp {
+      height: 28px;
+      line-height: 28px;
+      padding: 0 10px;
+      background: #f5fcfe;
+      border-radius: 3px;
+      border: 1px solid #15bdf4;
+      color: #15bdf4;
+      display: inline-block
+    }
+
+    .btn-inp:hover {
+      background: #e9f9fd
+    }
+
+    .gy-textarea {
+      border-radius: 3px;
+      background: #fff;
+      border: 1px solid #e2e2e2;
+      line-height: 22px;
+      color: #555;
+      font-family: "微软雅黑"
+    }
+
+    .marg-top {
+      margin-top: 10px;
+    }
+
+    .font {
+      color: #15bdf4;
+    }
+  </style>
 </head>
 
 <body>
-<span class="font marg-top">ibatis配置：</span><br/>
-<textarea id="before" rows="10" cols="150" class="gy-textarea marg-top"></textarea><br/>
-<span class="font marg-top">mybatis配置：</span><br/>
-<textarea id="after" rows="10" cols="150" class="gy-textarea marg-top"></textarea><br/>
-<div class="marg-top">
-	<a class="btn-inp" onClick="transform();">转化</a>
-</div>
+  <span class="font marg-top">ibatis配置：</span><br />
+  <textarea id="before" rows="10" cols="150" class="gy-textarea marg-top"></textarea><br />
+  <span class="font marg-top">mybatis配置：</span><br />
+  <textarea id="after" rows="10" cols="150" class="gy-textarea marg-top"></textarea><br />
+  <div class="marg-top">
+    <a class="btn-inp" onClick="transform();">转化</a>
+  </div>
 </body>
 
 <script>
-	String.prototype.trim=function(){
-	　　return this.replace(/(^\s*)|(\s*$)/g, "");
-	}
+  String.prototype.trim = function() {
+    return this.replace(/(^\s*)|(\s*$)/g, "");
+  }
 
-    function transform(){
-		var before = document.getElementById("before").value;
-		var dealStr = before;
-		dealStr = dealString(dealStr);
-		
-		dealStr = dealStr.replace("ibatis.apache.org", "mybatis.org");
-		dealStr = dealStr.replace("DTD SQL Map 2.0", "DTD Mapper 3.0");
-		dealStr = dealStr.replace("ibatis.apache.org/dtd/sql-map-2.dtd", "mybatis.org/dtd/mybatis-3-mapper.dtd")
-		
-		dealStr = dealStr.replace(/parameterClass/g, "parameterType");
-		dealStr = dealStr.replace(/resultClass/g, "resultType");
-		dealStr = dealStr.replace(/sqlMap/g, "mapper");
-		dealStr = dealStr.replace(/class/g, "type");
+  function transform() {
+    var before = document.getElementById("before").value;
+    var dealStr = before;
+    dealStr = dealString(dealStr);
 
-		document.getElementById("after").value = dealStr;
-	}
+    dealStr = dealStr.replace("ibatis.apache.org", "mybatis.org");
+    dealStr = dealStr.replace("DTD SQL Map 2.0", "DTD Mapper 3.0");
+    dealStr = dealStr.replace("ibatis.apache.org/dtd/sql-map-2.dtd", "mybatis.org/dtd/mybatis-3-mapper.dtd")
 
-	function dealString(dealStr){
-		var result = dealStr;
-		result = dealVariable(result);
-		result = dealLabel(result);
-		return result;
-	}
+    dealStr = dealStr.replace(/parameterClass/g, "parameterType");
+    dealStr = dealStr.replace(/resultClass/g, "resultType");
+    dealStr = dealStr.replace(/sqlMap/g, "mapper");
+    dealStr = dealStr.replace(/class/g, "type");
 
-	function dealVariable(dealStr){
-		var resultBuf = "";
-		for(var i = 0 ;i < dealStr.length;i++){
-			var str = dealStr.substring(i);
-			if(isExistedByHeadAndTail(str,'#','#')){
-				var subStr = getStringByHeadAndTail(str,'#','#');
-				resultBuf += "#{" + subStr + "}"
-				i = i + subStr.length + 1;
-			}else if(isExistedByHeadAndTail(str,'$','$')){
-				var subStr = getStringByHeadAndTail(str,'$','$');
-				resultBuf += "${" + subStr + "}"
-				i = i + subStr.length + 1;
-			}else{
-				resultBuf += dealStr.charAt(i)
-			}
-		}
-		return resultBuf;
-	}
+    document.getElementById("after").value = dealStr;
+  }
 
-	function dealLabel(dealStr){
-		var resultBuf = "";
-		for(var i = 0 ;i < dealStr.length;i++){
-			var str = dealStr.substring(i);
-			if(isExistedByHeadAndTail(str,"<isNotEmpty","</isNotEmpty>")){
-				var subStr = getStringByHeadAndTail(str,"<isNotEmpty","</isNotEmpty>");
-				var result = findStr(subStr);
-				var content = result[0];
-				var param = result[1];
-				resultBuf += '<if test="' + param + ' !=null and ' + param + ' !=\'\'">' + content + "</if>";
-				i = i + subStr.length + "<isNotEmpty</isNotEmpty>".length - 1;
-			}else if(isExistedByHeadAndTail(str,"<isNotNull","</isNotNull>")){
-				var subStr = getStringByHeadAndTail(str,"<isNotNull","</isNotNull>");
-				var result = findStr(subStr);
-				var content = result[0];
-				var param = result[1];
-				resultBuf += '<if test="' + param + ' !=null ">' + content + "</if>";
-				i = i + subStr.length + "<isNotNull</isNotNull>".length - 1;
-			}else if(isExistedByHeadAndTail(str,"<isEmpty","</isEmpty>")){
-				var subStr = getStringByHeadAndTail(str,"<isEmpty","</isEmpty>");
-				var result = findStr(subStr);
-				var content = result[0];
-				var param = result[1];
-				resultBuf += '<if test="' + param + ' ==null or ' + param + ' !=\'\'">'  + content + "</if>";
-				i = i + subStr.length + "<isEmpty</isEmpty>".length - 1;
-			}else if(isExistedByHeadAndTail(str,"<isNull","</isNull>")){
-				var subStr = getStringByHeadAndTail(str,"<isNull","</isNull>");
-				var result = findStr(subStr);
-				var content = result[0];
-				var param = result[1];
-				resultBuf += '<if test="' + param + ' ==null ">' + content + "</if>";
-				i = i + subStr.length + "<isNull</isNull>".length - 1;
-			}else if(isExistedByHeadAndTail(str,"<isEqual","</isEqual>")){
-				var subStr = getStringByHeadAndTail(str,"<isEqual","</isEqual>");
-				var result = findStr(subStr);
-				var content = result[0];
-				var param = result[1];
-				var compareValue = result[2];
-				resultBuf += '<if test="' + param + ' ==\'' + compareValue + '\' ">' + content + "</if>";
-				i = i + subStr.length + "<isEqual</isEqual>".length - 1;
-			}else if(isExistedByHeadAndTail(str,"<isNotEqual","</isNotEqual>")){
-				var subStr = getStringByHeadAndTail(str,"<isNotEqual","</isNotEqual>");
-				var result = findStr(subStr);
-				var content = result[0];
-				var param = result[1];
-				var compareValue = result[2];
-				resultBuf += '<if test="' + param + ' !=\'' + compareValue + '\' ">' + content + "</if>";
-				i = i + subStr.length + "<isNotEqual</isNotEqual>".length - 1;
-			}else{
-				resultBuf += dealStr.charAt(i)
-			}
-		}
-		return resultBuf;
-	}
+  function dealString(dealStr) {
+    var result = dealStr;
+    result = dealVariable(result);
+    result = dealLabel(result);
+    return result;
+  }
 
-	function findStr(str){
-		var v = str.indexOf(">");
-		var condition = str.substring(0, v);
-		var temp = condition.toLowerCase();
-		var start = temp.indexOf('property=');
-		var param = condition.substring(start + 'property='.length + 1);
-		var endStr = condition.substr(start + 'property='.length, 1);
-		var end = param.indexOf(endStr);
-		param = param.substring(0, end);
-		var content = str.substring(v + 1);
-		start = temp.indexOf('prepend=');
-		if(start >= 0){
-			var connect = condition.substring(start + 'prepend='.length + 1);
-			var endStr = condition.substr(start + 'prepend='.length, 1);
-			end = connect.indexOf(endStr);
-			connect = connect.substring(0, end);
-			if(content.indexOf("\n") == 0){
-				content = content.substring(1);
-				connect = "\n" + connect;
-			}
-			content = connect + " "+ content;
-		}
-		var result = [];
-		result[0] = content;
-		result[1] = param;
+  function dealVariable(dealStr) {
+    var resultBuf = "";
+    for (var i = 0; i < dealStr.length; i++) {
+      var str = dealStr.substring(i);
+      if (isExistedByHeadAndTail(str, '#', '#')) {
+        var subStr = getStringByHeadAndTail(str, '#', '#');
+        resultBuf += "#{" + subStr + "}"
+        i = i + subStr.length + 1;
+      } else if (isExistedByHeadAndTail(str, '$', '$')) {
+        var subStr = getStringByHeadAndTail(str, '$', '$');
+        resultBuf += "${" + subStr + "}"
+        i = i + subStr.length + 1;
+      } else {
+        resultBuf += dealStr.charAt(i)
+      }
+    }
+    return resultBuf;
+  }
 
-		start = temp.indexOf('comparevalue=');
-		if(start >= 0){
-			var compareValue = condition.substring(start + 'compareValue='.length + 1);
-			var endStr = condition.substr(start + 'compareValue='.length, 1);
-			end = compareValue.indexOf(endStr);
-			compareValue = compareValue.substring(0, end);
-			result[2] = compareValue;
-		}
-		return result;
-	}
+  function dealLabel(dealStr) {
+    var resultBuf = "";
+    var dynamicTemp = "";
+    for (var i = 0; i < dealStr.length; i++) {
+      var str = dealStr.substring(i);
+      if (isExistedByHeadAndTail(str, "<isNotEmpty", "</isNotEmpty>")) {
+        var subStr = getStringByHeadAndTail(str, "<isNotEmpty", "</isNotEmpty>");
+        var result = findStr(subStr);
+        var content = result[0];
+        var param = result[1];
+        resultBuf += '<if test="' + param + ' !=null and ' + param + ' !=\'\'">' + content + "</if>";
+        i = i + subStr.length + "<isNotEmpty</isNotEmpty>".length - 1;
+      } else if (isExistedByHeadAndTail(str, "<isNotNull", "</isNotNull>")) {
+        var subStr = getStringByHeadAndTail(str, "<isNotNull", "</isNotNull>");
+        var result = findStr(subStr);
+        var content = result[0];
+        var param = result[1];
+        resultBuf += '<if test="' + param + ' !=null ">' + content + "</if>";
+        i = i + subStr.length + "<isNotNull</isNotNull>".length - 1;
+      } else if (isExistedByHeadAndTail(str, "<isEmpty", "</isEmpty>")) {
+        var subStr = getStringByHeadAndTail(str, "<isEmpty", "</isEmpty>");
+        var result = findStr(subStr);
+        var content = result[0];
+        var param = result[1];
+        resultBuf += '<if test="' + param + ' ==null or ' + param + ' !=\'\'">' + content + "</if>";
+        i = i + subStr.length + "<isEmpty</isEmpty>".length - 1;
+      } else if (isExistedByHeadAndTail(str, "<isNull", "</isNull>")) {
+        var subStr = getStringByHeadAndTail(str, "<isNull", "</isNull>");
+        var result = findStr(subStr);
+        var content = result[0];
+        var param = result[1];
+        resultBuf += '<if test="' + param + ' ==null ">' + content + "</if>";
+        i = i + subStr.length + "<isNull</isNull>".length - 1;
+      } else if (isExistedByHeadAndTail(str, "<isEqual", "</isEqual>")) {
+        var subStr = getStringByHeadAndTail(str, "<isEqual", "</isEqual>");
+        var result = findStr(subStr);
+        var content = result[0];
+        var param = result[1];
+        var compareValue = result[2];
+        resultBuf += '<if test="' + param + ' ==\'' + compareValue + '\' ">' + content + "</if>";
+        i = i + subStr.length + "<isEqual</isEqual>".length - 1;
+      } else if (isExistedByHeadAndTail(str, "<isNotEqual", "</isNotEqual>")) {
+        var subStr = getStringByHeadAndTail(str, "<isNotEqual", "</isNotEqual>");
+        var result = findStr(subStr);
+        var content = result[0];
+        var param = result[1];
+        var compareValue = result[2];
+        resultBuf += '<if test="' + param + ' !=\'' + compareValue + '\' ">' + content + "</if>";
+        i = i + subStr.length + "<isNotEqual</isNotEqual>".length - 1;
+      } else if (isExistedByHeadAndTail(str, "<dynamic", ">")) {
+        var subStr = getStringByHeadAndTail(str, "<dynamic", ">");
+        var result = findStr(subStr + ">");
+        var content = result[0];
+        if (content.trim() == "") {
+          resultBuf += ' ';
+          dynamicTemp = ' ';
+        } else {
+          resultBuf += '<' + content + '>';
+          dynamicTemp = '</' + content + '>';
+        }
+        i = i + subStr.length + "<dynamic>".length - 1;
+      } else if (isExistedByHeadAndTail(str, "</dynamic", ">")) {
+        resultBuf += dynamicTemp;
+        dynamicTemp = "";
+        i = i + "</dynamic>".length - 1;
+      } else {
+        resultBuf += dealStr.charAt(i)
+      }
+    }
+    return resultBuf;
+  }
 
-	function isExistedByHeadAndTail(dealStr ,haedChar ,tailChar){
-		var c = dealStr.indexOf(haedChar);
-		if(c == 0){
-			var t = dealStr.substring(haedChar.length).indexOf(tailChar);
-			if(t > 0){
-				return true;
-			}
-		}
-		return false;
-	}
+  function findStr(str) {
+    var result = [];
+    var v = str.indexOf(">");
+    var condition = str.substring(0, v);
+    var temp = condition.toLowerCase();
+    var start = 0;
 
-	function getStringByHeadAndTail(dealStr, haedChar, tailChar){
-		var returnStr = "";
-		var t = dealStr.substring(haedChar.length).indexOf(tailChar);
-		returnStr = dealStr.substring(haedChar.length, t + haedChar.length);
-		return returnStr;
-	}
+    start = temp.indexOf('prepend=');
+    if (start >= 0) {
+      var connect = condition.substring(start + 'prepend='.length + 1);
+      var endStr = condition.substr(start + 'prepend='.length, 1);
+      end = connect.indexOf(endStr);
+      connect = connect.substring(0, end);
 
+      //得到<isNull><isNull/>标签中的值，没有则为空
+      var contentStr = str.length > v + 1 ? str.substring(v + 1) : "";
+      if (contentStr.indexOf("\n") == 0) {
+        contentStr = contentStr.substring(1);
+        connect = "\n" + connect;
+      }
+      if (contentStr != "") {
+        contentStr = connect + " " + contentStr;
+      } else {
+        contentStr = connect
+      }
+      result[0] = contentStr;
+    }
+
+    start = temp.indexOf('property=');
+    if (start >= 0) {
+      var param = condition.substring(start + 'property='.length + 1);
+      //得到property=后面的符号（可能是单引号，也可能是双引号）
+      var endStr = condition.substr(start + 'property='.length, 1);
+      var end = param.indexOf(endStr);
+      param = param.substring(0, end);
+      result[1] = param;
+    }
+
+    start = temp.indexOf('comparevalue=');
+    if (start >= 0) {
+      var compareValue = condition.substring(start + 'compareValue='.length + 1);
+      var endStr = condition.substr(start + 'compareValue='.length, 1);
+      end = compareValue.indexOf(endStr);
+      compareValue = compareValue.substring(0, end);
+      result[2] = compareValue;
+    }
+    return result;
+  }
+
+  function isExistedByHeadAndTail(dealStr, haedChar, tailChar) {
+    var c = dealStr.indexOf(haedChar);
+    if (c == 0) {
+      var t = dealStr.substring(haedChar.length).indexOf(tailChar);
+      if (t >= 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function getStringByHeadAndTail(dealStr, haedChar, tailChar) {
+    var returnStr = "";
+    var t = dealStr.substring(haedChar.length).indexOf(tailChar);
+    returnStr = dealStr.substring(haedChar.length, t + haedChar.length);
+    return returnStr;
+  }
 </script>
+
 </html>

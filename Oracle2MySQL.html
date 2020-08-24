@@ -34,12 +34,14 @@
     dealStr = dealStr.replace(/decode/gi, "decode");
 		dealStr = dealString(dealStr);
 
-		dealStr = dealStr.replace(/YYYY/gi, "%Y");
-		dealStr = dealStr.replace(/MM/gi, "%m");
-		dealStr = dealStr.replace(/DD/gi, "%d");
-		dealStr = dealStr.replace(/HH24/gi, "%H");
-		dealStr = dealStr.replace(/MI/gi, "%i");
-		dealStr = dealStr.replace(/SS/gi, "%s");
+		// dealStr = dealStr.replace(/YYYY/gi, "%Y");
+		// dealStr = dealStr.replace(/MM/gi, "%m");
+		// dealStr = dealStr.replace(/DD/gi, "%d");
+    dealStr = dealStr.replace(/YYYYMMDD/gi, "%Y%m%d");
+    dealStr = dealStr.replace(/YYYY-MM-DD/gi, "%Y-%m-%d");
+    dealStr = dealStr.replace(/YYYY\/MM\/DD/gi, "%Y/%m/%d");
+    dealStr = dealStr.replace(/HH24:MI:SS/gi, "%H:%i:%s");
+    dealStr = dealStr.replace(/HH24MISS/gi, "%H%i%s");
 
 		dealStr = dealStr.replace(/from dual/gi, "");
 		dealStr = dealStr.replace(/nvl/gi, "ifnull");
