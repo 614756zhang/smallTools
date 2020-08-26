@@ -51,8 +51,8 @@
 </body>
 
 <script>
-  String.prototype.trim = function() {
-    return this.replace(/(^\s*)|(\s*$)/g, "");
+  function trim(str) {
+    return str.replace(/(^\s*)|(\s*$)/g, "");
   }
 
   function transform() {
@@ -151,7 +151,7 @@
         var subStr = getStringByHeadAndTail(str, "<dynamic", ">");
         var result = findStr(subStr + ">");
         var content = result[0];
-        if (content.trim() == "") {
+        if (trim(content) == "") {
           resultBuf += ' ';
           dynamicTemp = ' ';
         } else {
