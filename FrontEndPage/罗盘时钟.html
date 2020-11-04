@@ -36,6 +36,7 @@
   var secondsText = getArry(60,"秒");
   function getArry(num,suffix){
     var numTxt = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+    var space = '　';
     var result = [];
     for(var i=1;i<=num;i++){
       var res = '';
@@ -50,6 +51,19 @@
         res = numTxt[temp2] + numTxt[10];
         if(temp1 > 0){
             res += numTxt[temp1];
+        }
+      }
+      //补空格
+      if (num > 20) {
+        if (i<=10){
+          res += space + space;
+        } else if (i<20) {
+          res += space;
+        } else{
+          temp1 = i%10;
+          if(temp1 == 0){
+              res += space;
+          }
         }
       }
       res += suffix;
