@@ -42,7 +42,12 @@
 		dealStr = dealStr.replace(/MM-DD-YYYY/gi, "%m-%d-%Y");
 		
 		dealStr = dealStr.replace(/YYYYMMDD/gi, "%Y%m%d");
+		dealStr = dealStr.replace(/DDMMYYYY/gi, "%d%m%Y");
+		dealStr = dealStr.replace(/MMDDYYYY/gi, "%m%d%Y");
+		
 		dealStr = dealStr.replace(/YYYY\/MM\/DD/gi, "%Y/%m/%d");
+		dealStr = dealStr.replace(/DD\/MM\/YYYY/gi, "%d/%m/%Y");
+		dealStr = dealStr.replace(/MM\/DD\/YYYY/gi, "%m/%d/%Y");
 		
 		dealStr = dealStr.replace(/HH24:MI:SS/gi, "%H:%i:%s");
 		dealStr = dealStr.replace(/HH24MISS/gi, "%H%i%s");
